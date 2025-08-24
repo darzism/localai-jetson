@@ -1,0 +1,4 @@
+models:
+  - name: gpt4all
+    backend: llama-cpp
+    path: /models/gpt4all-model.bin
