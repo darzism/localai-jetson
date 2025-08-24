@@ -1,20 +1,34 @@
 services:
   localai:
-    image: localai/localai:latest-cuda-arm64
+    # Use the Jetson/L4T build (works on ARM64 + JetPack)
+    image: quay.io/go-skynet/local-ai:master-nvidia-l4t-arm64-core
+    # If you prefer Docker Hub instead of Quay, use:
+    # image: localai/localai:master-nvidia-l4t-arm64
+
     container_name: localai
     environment:
-#      - LOCALAI_API_KEY=changeme
+#     - LOCALAI_API_KEY=changeme
       - LOCALAI_MODELS_PATH=/models
       - LOCALAI_CONTEXT_SIZE=2048
-      - LOCALAI_MAX_RAM=15360 # MB, leaves 1GB for OS
+      - LOCALAI_MAX_RAM=15360     # MB, leaves ~1GB for OS
+      # NVIDIA runtime hints (commonly needed on Jetson)
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+
     volumes:
       - ./models:/models
       - ./config.yaml:/etc/localai/config.yaml:ro
+
     ports:
       - "8080:8080"
+
+    # Jetson: keep the legacy runtime flag
     runtime: nvidia
+
     deploy:
       resources:
         limits:
           memory: 15G
+
     restart: unless-stopped
+
