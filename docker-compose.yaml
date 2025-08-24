@@ -1,0 +1,20 @@
+services:
+  localai:
+    image: localai/localai:latest-cuda-arm64
+    container_name: localai
+    environment:
+#      - LOCALAI_API_KEY=changeme
+      - LOCALAI_MODELS_PATH=/models
+      - LOCALAI_CONTEXT_SIZE=2048
+      - LOCALAI_MAX_RAM=15360 # MB, leaves 1GB for OS
+    volumes:
+      - ./models:/models
+      - ./config.yaml:/etc/localai/config.yaml:ro
+    ports:
+      - "8080:8080"
+    runtime: nvidia
+    deploy:
+      resources:
+        limits:
+          memory: 15G
+    restart: unless-stopped
